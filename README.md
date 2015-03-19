@@ -44,6 +44,20 @@ acl.hasPermission('Moderator', 'Blog', 'create') // true
 * resourceName - The identifier to the resource, either a name or a data based id
 * permissionName - Self explanatory, will throw an error if resource does not have such a permission
 
+### deleteGroup (groupName)
+* groupName - The identifier to the group, either a name or a data based id
+
+### deletePermission (resourceName, permissionName)
+* resourceName - The identifier to the resource, either a name or a data based id
+* permissionName - Self explanatory, will throw an error if resource does not have such a permission
+
+Recalculates permission values and group resource values
+
+### deleteResource (resourceName)
+* resourceName - The identifier to the resource, either a name or a data based id
+
+Also removes the resource from all groups, use removeResource to only remove it from a particular group
+
 ### getGroup (name)
 * groupName - The identifier to the group, either a name or a data based id
 
@@ -66,6 +80,19 @@ Returns true if group has permission, false if not
 * permissionName - Self explanatory, will throw an error if resource does not have such a permission
 
 Adds a new permission to the resource, maximum of 31 permissions per resource
+
+### removePermission (groupName, resourceName, permissionName)
+* groupName - The identifier to the group, either a name or a data based id
+* resourceName - The identifier to the resource, either a name or a data based id
+* permissionName - Self explanatory, will throw an error if resource does not have such a permission
+
+Removes the permission from the group, and recalculates resource value for group
+
+### removeResource (groupName, resourceName)
+* groupName - The identifier to the group, either a name or a data based id
+* resourceName - The identifier to the resource, either a name or a data based id
+
+Removes the resource from the group
 
 ## FAQ
 ### Why is there a limit on the amount of permissions per resource?
