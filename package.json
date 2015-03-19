@@ -22,7 +22,7 @@
     "acl",
     "bitwise",
     "group",
-    "groups"
+    "groups",
     "perms",
     "permissions"
   ],
