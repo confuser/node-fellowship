@@ -13,6 +13,8 @@ Fellowship.prototype.addGroup = require('./lib/add-group')
 
 Fellowship.prototype.addPermission = require('./lib/add-permission')
 
+Fellowship.prototype.addPermissions = require('./lib/add-permissions')
+
 Fellowship.prototype.deleteGroup = require('./lib/delete-group')
 
 Fellowship.prototype.deletePermission = require('./lib/delete-permission')

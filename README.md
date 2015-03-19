@@ -44,6 +44,13 @@ acl.hasPermission('Moderator', 'Blog', 'create') // true
 * resourceName - The identifier to the resource, either a name or a data based id
 * permissionName - Self explanatory, will throw an error if resource does not have such a permission
 
+### addPermission (groupName, resourceName, permissionNames)
+* groupName - The identifier to the group, either a name or a data based id
+* resourceName - The identifier to the resource, either a name or a data based id
+* permissionNames - Self explanatory, array of permission names, will throw an error if resource does not have such a permission
+
+Internally uses addPermission
+
 ### deleteGroup (groupName)
 * groupName - The identifier to the group, either a name or a data based id
 
