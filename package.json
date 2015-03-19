@@ -19,10 +19,12 @@
     "url": "git@github.com:confuser/node-fellowship.git"
   },
   "keywords": [
-    "mongo",
-    "mongodb",
-    "uuid",
-    "helper"
+    "acl",
+    "bitwise",
+    "group",
+    "groups"
+    "perms",
+    "permissions"
   ],
   "author": "James Mortemore <jamesmortemore@gmail.com>",
   "license": "ISC",
