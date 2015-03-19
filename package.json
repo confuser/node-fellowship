@@ -1,5 +1,5 @@
 {
-  "name": "Fellowship",
+  "name": "fellowship",
   "version": "0.0.1",
   "description": "Bitwise based access control with inheritence",
   "main": "index.js",
