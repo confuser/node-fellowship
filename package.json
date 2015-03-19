@@ -1,7 +1,7 @@
 {
   "name": "fellowship",
   "version": "0.0.1",
-  "description": "Bitwise based access control with inheritence",
+  "description": "An unopinionated bitwise memory based ACL",
   "main": "index.js",
   "publishConfig": {
     "registry": "http://registry.npmjs.org"
