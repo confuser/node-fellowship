@@ -28,6 +28,11 @@ acl.addResource('Blog', [ 'create,', 'read', 'update', 'delete' ])
 acl.addGroup('Moderator')
 acl.addPermission('Moderator', 'Blog', 'create')
 acl.hasPermission('Moderator', 'Blog', 'create') // true
+
+// Root
+acl.addGroup('Root')
+acl.addPermission('Root', 'Blog', '*')
+acl.hasPermission('Root', 'Blog', 'read') // true
 ```
 
 ## Methods

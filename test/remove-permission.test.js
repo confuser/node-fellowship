@@ -35,4 +35,18 @@ describe('#removePermission', function () {
     assert.equal(fellowship.getGroup('test').test, 2)
   })
 
+  it('should remove a resource if wildcard provided', function () {
+    var fellowship = new Fellowship()
+
+    fellowship.addResource('test', [ 'hello', 'world' ])
+    fellowship.addGroup('test', { test: 2 })
+    fellowship.addPermission('test', 'test', 'hello')
+
+    assert.equal(fellowship.getGroup('test').test, 3)
+
+    fellowship.removePermission('test', 'test', '*')
+
+    assert.equal(fellowship.getGroup('test').test, undefined)
+  })
+
 })

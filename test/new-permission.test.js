@@ -25,4 +25,13 @@ describe('#newPermission', function () {
     assert.throws(fellowship.newPermission.bind(fellowship, 'test', 'perm')
       , /perm is already a defined permission/)
   })
+
+  it('should throw an error if permission is wildcard', function () {
+    var fellowship = new Fellowship()
+
+    fellowship.addResource('test', [])
+
+    assert.throws(fellowship.newPermission.bind(fellowship, 'test', '*')
+      , /\* wildcard may not be a permission/)
+  })
 })

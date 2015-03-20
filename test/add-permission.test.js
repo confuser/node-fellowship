@@ -23,4 +23,15 @@ describe('#addPermission', function () {
     assert.equal(fellowship.getGroup('test').test, 3)
   })
 
+  it('should successfully add a * permission', function () {
+    var fellowship = new Fellowship()
+
+    fellowship.addResource('test', [ 'hello', 'world' ])
+    fellowship.addGroup('test')
+
+    fellowship.addPermission('test', 'test', '*')
+
+    assert.equal(fellowship.getGroup('test').test, '*')
+  })
+
 })
