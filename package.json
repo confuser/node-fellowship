@@ -1,6 +1,6 @@
 {
   "name": "fellowship",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "An unopinionated bitwise memory based ACL",
   "main": "index.js",
   "publishConfig": {
