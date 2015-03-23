@@ -106,6 +106,35 @@ Removes the permission from the group, and recalculates resource value for group
 
 Removes the resource from the group
 
+## Events
+Every method apart from getters emit an event
+
+```js
+fellowship.on('permission.removed', function (groupName, resourceName, permissionName) {
+  console.log(groupName, resourceName, permissionName)
+})
+```
+
+* group.added (name, resourcePermissions)
+
+* permission.added (groupName, resourceName, permissionName)
+
+* permissions.added (groupName, resourceName, permissions)
+
+* resource.added (name, permissions)
+
+* group.deleted (name)
+
+* permission.deleted (resourceName, permissionName)
+
+* resource.deleted (resourceName)
+
+* permission.new (resourceName, permissionName)
+
+* permission.removed (groupName, resourceName, permission)
+
+* resource.removed (groupName, resourceName)
+
 ## FAQ
 ### Why is there a limit on the amount of permissions per resource?
 This is due to 32bit operations within JavaScript. If you find yourself needing a resource with more than 31 permissions, you should look into refactoring.

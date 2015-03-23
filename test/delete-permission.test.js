@@ -28,4 +28,19 @@ describe('#deletePermission', function () {
     assert.equal(fellowship.getGroup('test').test, 3)
   })
 
+  it('should emit permission.deleted', function (done) {
+    var fellowship = new Fellowship()
+
+    fellowship.on('permission.deleted', function (resourceName, permissionName) {
+      assert.equal(resourceName, 'test')
+      assert.deepEqual(permissionName, 'hello')
+
+      done()
+    })
+
+    fellowship.addResource('test', [ 'hello', 'foo', 'world' ])
+    fellowship.deletePermission('test', 'hello')
+
+  })
+
 })

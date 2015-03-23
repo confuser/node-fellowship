@@ -22,4 +22,20 @@ describe('#removeResource', function () {
     assert.equal(fellowship.getGroup('test').test, undefined)
   })
 
+  it('should emit resource.removed', function (done) {
+    var fellowship = new Fellowship()
+
+    fellowship.on('resource.removed', function (groupName, resourceName) {
+      assert.equal(groupName, 'test')
+      assert.equal(resourceName, 'test')
+
+      done()
+    })
+
+    fellowship.addResource('test', [ 'hello', 'foo', 'world' ])
+    fellowship.addGroup('test', { test: 2 })
+    fellowship.removeResource('test', 'test')
+
+  })
+
 })

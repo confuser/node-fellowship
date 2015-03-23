@@ -34,4 +34,21 @@ describe('#addPermission', function () {
     assert.equal(fellowship.getGroup('test').test, '*')
   })
 
+  it('should emit permission.added', function (done) {
+    var fellowship = new Fellowship()
+
+    fellowship.addResource('test', [ 'hello', 'world' ])
+    fellowship.addGroup('test')
+
+    fellowship.on('permission.added', function (groupName, resourceName, permission) {
+      assert.equal(groupName, 'test')
+      assert.equal(resourceName, 'test')
+      assert(permission, '*')
+
+      done()
+    })
+
+    fellowship.addPermission('test', 'test', '*')
+  })
+
 })

@@ -49,4 +49,21 @@ describe('#removePermission', function () {
     assert.equal(fellowship.getGroup('test').test, undefined)
   })
 
+  it('should emit permission.removed', function (done) {
+    var fellowship = new Fellowship()
+
+    fellowship.on('permission.removed', function (groupName, resourceName, permissionName) {
+      assert.equal(groupName, 'test')
+      assert.equal(resourceName, 'test')
+      assert.equal(permissionName, 'foo')
+
+      done()
+    })
+
+    fellowship.addResource('test', [ 'hello', 'foo', 'world' ])
+    fellowship.addGroup('test', { test: 2 })
+    fellowship.removePermission('test', 'test', 'foo')
+
+  })
+
 })

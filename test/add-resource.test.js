@@ -40,4 +40,18 @@ describe('#addResource', function () {
       , /Resource test already exists/)
   })
 
+  it('should emit resource.added', function (done) {
+    var fellowship = new Fellowship()
+
+    fellowship.on('resource.added', function (name, permissions) {
+      assert.equal(name, 'test')
+      assert.deepEqual(permissions, [ 'hello', 'foo', 'world' ])
+
+      done()
+    })
+
+    fellowship.addResource('test', [ 'hello', 'foo', 'world' ])
+
+  })
+
 })

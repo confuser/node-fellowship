@@ -22,4 +22,18 @@ describe('#deleteGroup', function () {
     assert.throws(fellowship.deleteGroup.bind(fellowship, 'test'), /Group test does not exist/)
   })
 
+  it('should emit group.deleted', function (done) {
+    var fellowship = new Fellowship()
+
+    fellowship.on('group.deleted', function (name) {
+      assert.equal(name, 'test')
+
+      done()
+    })
+
+    fellowship.addGroup('test')
+    fellowship.deleteGroup('test')
+
+  })
+
 })

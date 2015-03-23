@@ -34,4 +34,20 @@ describe('#newPermission', function () {
     assert.throws(fellowship.newPermission.bind(fellowship, 'test', '*')
       , /\* wildcard may not be a permission/)
   })
+
+  it('should emit permission.new', function (done) {
+    var fellowship = new Fellowship()
+
+    fellowship.on('permission.new', function (resourceName, permissionName) {
+      assert.equal(resourceName, 'test')
+      assert.equal(permissionName, 'bar')
+
+      done()
+    })
+
+    fellowship.addResource('test', [ 'hello', 'foo', 'world' ])
+    fellowship.newPermission('test', 'bar')
+
+  })
+
 })

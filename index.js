@@ -1,9 +1,16 @@
+var EventEmitter = require('events').EventEmitter
+  , util = require('util')
+
 module.exports = Fellowship
 
 function Fellowship(resources, groups) {
   this.resources = resources || {}
   this.groups = groups || {}
+
+  EventEmitter.call(this)
 }
+
+util.inherits(Fellowship, EventEmitter)
 
 Fellowship.prototype.addResource = require('./lib/add-resource')
 

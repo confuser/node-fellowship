@@ -16,4 +16,18 @@ describe('#deleteResource', function () {
     assert.equal(fellowship.getGroup('test').test, undefined)
   })
 
+  it('should emit resource.deleted', function (done) {
+    var fellowship = new Fellowship()
+
+    fellowship.on('resource.deleted', function (name) {
+      assert.equal(name, 'test')
+
+      done()
+    })
+
+    fellowship.addResource('test', [ 'hello', 'foo', 'world' ])
+    fellowship.deleteResource('test')
+
+  })
+
 })
