@@ -1,17 +1,17 @@
 {
   "name": "fellowship",
   "version": "1.0.0",
-  "description": "An unopinionated bitwise memory based ACL",
+  "description": "Bitwise based ACL",
   "main": "index.js",
   "publishConfig": {
     "registry": "http://registry.npmjs.org"
   },
   "scripts": {
-    "lint": "jshint .",
-    "checkStyle": "jscs .",
-    "pretest": "npm run-script lint && npm run-script checkStyle",
-    "test": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
-    "posttest": "./node_modules/.bin/istanbul check-coverage && rm -rf coverage",
+    "lint": "eslint -f unix .",
+    "coveralls": "cat ./coverage/lcov.info | coveralls",
+    "pretest": "npm run lint",
+    "test": "istanbul cover node_modules/mocha/bin/_mocha  -- --recursive",
+    "posttest": "istanbul check-coverage --statements 90 --branches 75 --functions 100 --lines 95 || echo open coverage/lcov-report/index.html to find out more",
     "prepublish": "npm test && npm prune"
   },
   "repository": {
@@ -31,13 +31,15 @@
   "bugs": {
     "url": "https://github.com/confuser/node-fellowship/issues"
   },
-  "dependencies": {},
+  "dependencies": {
+    "async.each": "^0.5.2"
+  },
   "devDependencies": {
+    "@confuser/eslint-config": "^2.0.0",
     "coveralls": "^2.11.2",
-    "istanbul": "0.3.5",
-    "jscs": "1",
-    "jshint": "2",
-    "jshint-full-path": "0",
-    "mocha": "2"
+    "eslint": "^2.10.2",
+    "eslint-plugin-standard": "^1.3.2",
+    "istanbul": "^0.4.1",
+    "mocha": "^2.3.2"
   }
 }

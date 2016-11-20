@@ -1,42 +1,70 @@
-var assert = require('assert')
-  , Fellowship = require('../')
+const assert = require('assert')
+    , createFellowship = require('../')
 
 describe('#hasPermission', function () {
 
-  it('should return false for non-existent permission', function () {
-    var fellowship = new Fellowship()
+  it('should return false for non-existent permission', function (done) {
+    let opts = { resources: { test: { hello: 1, test: 2 } }, groups: { test: { test: 3 } } }
 
-    fellowship.addResource('test', [ 'hello', 'test' ])
-    fellowship.addGroup('test', { test: 3 })
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
 
-    assert.equal(fellowship.hasPermission('test', 'test', 'foo'), false)
+      fellowship.hasPermission('test', 'test', 'foo', function (error, hasPermission) {
+        if (error) return done(error)
+
+        assert(!hasPermission)
+
+        done()
+      })
+    })
   })
 
-  it('should return true for permission', function () {
-    var fellowship = new Fellowship()
+  it('should return true for permission', function (done) {
+    let opts = { resources: { test: { hello: 1, test: 2 } }, groups: { test: { test: 3 } } }
 
-    fellowship.addResource('test', [ 'hello', 'test' ])
-    fellowship.addGroup('test', { test: 3 })
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
 
-    assert.equal(fellowship.hasPermission('test', 'test', 'hello'), true)
+      fellowship.hasPermission('test', 'test', 'hello', function (error, hasPermission) {
+        if (error) return done(error)
+
+        assert(hasPermission)
+
+        done()
+      })
+    })
   })
 
-  it('should return true for group with wildcard permission', function () {
-    var fellowship = new Fellowship()
+  it('should return true for group with wildcard permission', function (done) {
+    let opts = { resources: { test: { hello: 1, test: 2 } }, groups: { test: { test: '*' } } }
 
-    fellowship.addResource('test', [ 'hello', 'test' ])
-    fellowship.addGroup('test', { test: '*' })
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
 
-    assert.equal(fellowship.hasPermission('test', 'test', 'hello'), true)
+      fellowship.hasPermission('test', 'test', 'hello', function (error, hasPermission) {
+        if (error) return done(error)
+
+        assert(hasPermission)
+
+        done()
+      })
+    })
   })
 
-  it('should return false for * permission', function () {
-    var fellowship = new Fellowship()
+  it('should return false for wildcard permission', function (done) {
+    let opts = { resources: { test: { hello: 1, test: 2 } }, groups: { test: { test: 1 } } }
 
-    fellowship.addResource('test', [ 'hello', 'test' ])
-    fellowship.addGroup('test', { test: 1 })
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
 
-    assert.equal(fellowship.hasPermission('test', 'test', '*'), false)
+      fellowship.hasPermission('test', 'test', '*', function (error, hasPermission) {
+        if (error) return done(error)
+
+        assert(!hasPermission)
+
+        done()
+      })
+    })
   })
 
 })

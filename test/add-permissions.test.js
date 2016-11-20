@@ -1,51 +1,75 @@
-var assert = require('assert')
-  , Fellowship = require('../')
+const assert = require('assert')
+    , createFellowship = require('../')
 
 describe('#addPermissions', function () {
 
-  it('should throw an error for non-array permissions', function () {
-    var fellowship = new Fellowship()
+  it('should return an error for non-array permissions', function (done) {
+    let opts = { resources: { test: { hello: 1, world: 2 } }, groups: { test: { test: 2 } } }
 
-    assert.throws(fellowship.addPermissions.bind(fellowship, 'test', {}), /Permissions must be an Array of names/)
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
+
+      fellowship.addPermissions('test', 'test', {}, function (error) {
+        assert.strictEqual(error.message, 'Permissions must be an Array of names')
+
+        done()
+      })
+    })
   })
 
-  it('should throw an error if group has permission already', function () {
-    var fellowship = new Fellowship()
+  it('should return an error if group has permission already', function (done) {
+    let opts = { resources: { test: { hello: 1, world: 2 } }, groups: { test: { test: 2 } } }
 
-    fellowship.addResource('test', [ 'hello', 'world' ])
-    fellowship.addGroup('test', { test: 2 })
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
 
-    assert.throws(fellowship.addPermission.bind(fellowship, 'test', 'test', [ 'world' ]), /Permission world already exists in test/)
+      fellowship.addPermissions('test', 'test', [ 'world' ], function (error) {
+        assert.strictEqual(error.message, 'Permission world already exists in test')
+
+        done()
+      })
+    })
   })
 
-  it('should successfully add permissions', function () {
-    var fellowship = new Fellowship()
+  it('should successfully add permissions', function (done) {
+    let opts = { resources: { test: { hello: 1, foo: 2, world: 4 } }, groups: { test: {} } }
 
-    fellowship.addResource('test', [ 'hello', 'foo', 'world' ])
-    fellowship.addGroup('test')
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
 
-    fellowship.addPermissions('test', 'test', [ 'hello', 'world' ])
+      fellowship.addPermissions('test', 'test', [ 'hello', 'world' ], function (error) {
+        if (error) return done(error)
 
-    assert.equal(fellowship.getGroup('test').test, 5)
+        fellowship.getGroup('test', function (error, group) {
+          if (error) return done(error)
+
+          assert.equal(group.test, 5)
+
+          done()
+        })
+      })
+    })
   })
 
   it('should emit permissions.added', function (done) {
-    var fellowship = new Fellowship()
+    let opts = { resources: { test: { hello: 1, foo: 2, world: 4 } }, groups: { test: {} } }
 
-    fellowship.addResource('test', [ 'hello', 'foo', 'world' ])
-    fellowship.addGroup('test')
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
 
-    fellowship.on('permissions.added', function (groupName, resourceName, permissions) {
-      assert.equal(groupName, 'test')
-      assert.equal(resourceName, 'test')
-      assert.deepEqual(permissions, [ 'hello', 'world' ])
+      fellowship.on('permissions.added', function (groupName, resourceName, permissions) {
+        assert.equal(groupName, 'test')
+        assert.equal(resourceName, 'test')
+        assert.deepEqual(permissions, [ 'hello', 'world' ])
 
-      done()
+        done()
+      })
+
+      fellowship.addPermissions('test', 'test', [ 'hello', 'world' ], function (error) {
+        if (error) return done(error)
+
+      })
     })
-
-    fellowship.addPermissions('test', 'test', [ 'hello', 'world' ])
-
-    assert.equal(fellowship.getGroup('test').test, 5)
   })
 
 })

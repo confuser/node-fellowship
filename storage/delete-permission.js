@@ -1,14 +1,12 @@
-module.exports = function deletePermission(resourceName, permissionName) {
-  var resource = this.getResource(resourceName)
+module.exports = function deletePermission(resourceName, permissionName, callback) {
+  let resource = this.resources[resourceName]
     , value = resource[permissionName]
-
-  if (!value) throw new Error(permissionName + ' is not a defined permission')
 
   var groupsAffected = []
 
   // Find and remove the permission from groups
   Object.keys(this.groups).forEach(function (groupName) {
-    var group = this.getGroup(groupName)
+    var group = this.groups[groupName]
 
     if (!group[resourceName]) return
 
@@ -30,7 +28,7 @@ module.exports = function deletePermission(resourceName, permissionName) {
   if (groupsAffected.length !== 0) {
 
     groupsAffected.forEach(function (groupName) {
-      var group = this.getGroup(groupName)
+      var group = this.groups[groupName]
 
       Object.keys(oldPerms).forEach(function (permission) {
         var oldValue = oldPerms[permission]
@@ -44,5 +42,5 @@ module.exports = function deletePermission(resourceName, permissionName) {
     }.bind(this))
   }
 
-  this.emit('permission.deleted', resourceName, permissionName)
+  callback()
 }

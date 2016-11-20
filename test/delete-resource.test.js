@@ -1,33 +1,44 @@
-var assert = require('assert')
-  , Fellowship = require('../')
+const assert = require('assert')
+    , createFellowship = require('../')
 
 describe('#deleteResource', function () {
 
-  it('should successfully delete a resource and all references in groups', function () {
-    var fellowship = new Fellowship()
+  it('should successfully delete a resource and all references in groups', function (done) {
+    let opts = { resources: { test: {} }, groups: { test: { test: 2 } } }
 
-    fellowship.addResource('test', [ 'hello', 'world' ])
-    fellowship.addGroup('test', { test: 2 })
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
 
-    assert.equal(fellowship.getGroup('test').test, 2)
+      fellowship.deleteResource('test', function (error) {
+        if (error) return done(error)
 
-    fellowship.deleteResource('test')
+        fellowship.getGroup('test', function (error, group) {
+          if (error) return done(error)
 
-    assert.equal(fellowship.getGroup('test').test, undefined)
+          assert.equal(group.test, undefined)
+
+          done()
+        })
+      })
+    })
   })
 
   it('should emit resource.deleted', function (done) {
-    var fellowship = new Fellowship()
+    let opts = { resources: { test: {} }, groups: {} }
 
-    fellowship.on('resource.deleted', function (name) {
-      assert.equal(name, 'test')
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
 
-      done()
+      fellowship.on('resource.deleted', function (name) {
+        assert.equal(name, 'test')
+
+        done()
+      })
+
+      fellowship.deleteResource('test', function (error) {
+        if (error) return done(error)
+      })
     })
-
-    fellowship.addResource('test', [ 'hello', 'foo', 'world' ])
-    fellowship.deleteResource('test')
-
   })
 
 })

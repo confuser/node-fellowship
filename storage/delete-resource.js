@@ -1,7 +1,7 @@
-module.exports = function deleteResource(resourceName) {
+module.exports = function deleteResource(resourceName, callback) {
   // Find and remove the resource from groups
   Object.keys(this.groups).forEach(function (groupName) {
-    var group = this.getGroup(groupName)
+    var group = this.groups[groupName]
 
     if (!group[resourceName]) return
 
@@ -11,5 +11,5 @@ module.exports = function deleteResource(resourceName) {
 
   delete this.resources[resourceName]
 
-  this.emit('resource.deleted', resourceName)
+  callback()
 }
