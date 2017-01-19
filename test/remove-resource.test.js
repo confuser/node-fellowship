@@ -1,41 +1,59 @@
-var assert = require('assert')
-  , Fellowship = require('../')
+const assert = require('assert')
+    , createFellowship = require('../')
 
 describe('#removeResource', function () {
 
-  it('should throw an error if group does not have resource', function () {
-    var fellowship = new Fellowship()
+  it('should return an error if group does not have resource', function (done) {
+    let opts = { resources: {}, groups: { test: {} } }
 
-    fellowship.addGroup('test', { test: 2 })
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
 
-    assert.throws(fellowship.removeResource.bind(fellowship, 'test', 'a'), /Group test does not contain resource a/)
+      fellowship.removeResource('test', 'a', function (error) {
+        assert.strictEqual(error.message, 'Group test does not contain resource a')
+
+        done()
+      })
+    })
   })
 
-  it('should successfully remove a resource', function () {
-    var fellowship = new Fellowship()
+  it('should successfully remove a resource', function (done) {
+    let opts = { resources: { test: { hello: 1 } }, groups: { test: { test: 1 } } }
 
-    fellowship.addResource('test', [ 'hello', 'world' ])
-    fellowship.addGroup('test', { test: 2 })
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
 
-    fellowship.removeResource('test', 'test')
+      fellowship.removeResource('test', 'test', function (error) {
+        if (error) return done(error)
 
-    assert.equal(fellowship.getGroup('test').test, undefined)
+        fellowship.getGroup('test', function (error, group) {
+          if (error) return done(error)
+
+          assert.strictEqual(group.test, undefined)
+
+          done()
+        })
+      })
+    })
   })
 
   it('should emit resource.removed', function (done) {
-    var fellowship = new Fellowship()
+    let opts = { resources: { test: { hello: 1 } }, groups: { test: { test: 1 } } }
 
-    fellowship.on('resource.removed', function (groupName, resourceName) {
-      assert.equal(groupName, 'test')
-      assert.equal(resourceName, 'test')
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
 
-      done()
+      fellowship.on('resource.removed', function (groupName, resourceName) {
+        assert.equal(groupName, 'test')
+        assert.equal(resourceName, 'test')
+
+        done()
+      })
+
+      fellowship.removeResource('test', 'test', function (error) {
+        if (error) return done(error)
+      })
     })
-
-    fellowship.addResource('test', [ 'hello', 'foo', 'world' ])
-    fellowship.addGroup('test', { test: 2 })
-    fellowship.removeResource('test', 'test')
-
   })
 
 })

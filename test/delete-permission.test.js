@@ -1,46 +1,59 @@
-var assert = require('assert')
-  , Fellowship = require('../')
+const assert = require('assert')
+    , createFellowship = require('../')
 
 describe('#deletePermission', function () {
 
-  it('should throw an error if resource does not have permission', function () {
-    var fellowship = new Fellowship()
+  it('should return an error if resource does not have permission', function (done) {
+    let opts = { resources: { test: { hello: 1 } }, groups: {} }
 
-    fellowship.addResource('test', [ 'hello', 'world' ])
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
 
-    assert.throws(fellowship.deletePermission.bind(fellowship, 'test', 'test'), /test is not a defined permission/)
+      fellowship.deletePermission('test', 'test', function (error) {
+        assert.strictEqual(error.message, 'test is not a defined permission')
+
+        done()
+      })
+    })
   })
 
-  it('should successfully delete a permission and recalculate group permissions', function () {
-    var fellowship = new Fellowship()
+  it('should successfully delete a permission and recalculate group permissions', function (done) {
+    let opts = { resources: { test: { hello: 1, world: 2, foo: 4 } }, groups: { test: { test: 7 } } }
 
-    fellowship.addResource('test', [ 'hello', 'world', 'foo' ])
-    fellowship.addGroup('test')
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
 
-    fellowship.addPermission('test', 'test', 'hello')
-    fellowship.addPermission('test', 'test', 'world')
-    fellowship.addPermission('test', 'test', 'foo')
+      fellowship.deletePermission('test', 'world', function (error) {
+        if (error) return done(error)
 
-    assert.equal(fellowship.getGroup('test').test, 7)
+        fellowship.getGroup('test', function (error, group) {
+          if (error) return done()
 
-    fellowship.deletePermission('test', 'world')
+          assert.equal(group.test, 3)
 
-    assert.equal(fellowship.getGroup('test').test, 3)
+          done()
+        })
+      })
+    })
   })
 
   it('should emit permission.deleted', function (done) {
-    var fellowship = new Fellowship()
+    let opts = { resources: { test: { hello: 1 } }, groups: {} }
 
-    fellowship.on('permission.deleted', function (resourceName, permissionName) {
-      assert.equal(resourceName, 'test')
-      assert.deepEqual(permissionName, 'hello')
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
 
-      done()
+      fellowship.on('permission.deleted', function (resourceName, permissionName) {
+        assert.equal(resourceName, 'test')
+        assert.deepEqual(permissionName, 'hello')
+
+        done()
+      })
+
+      fellowship.deletePermission('test', 'hello', function (error) {
+        if (error) return done(error)
+      })
     })
-
-    fellowship.addResource('test', [ 'hello', 'foo', 'world' ])
-    fellowship.deletePermission('test', 'hello')
-
   })
 
 })

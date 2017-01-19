@@ -1,39 +1,56 @@
-var assert = require('assert')
-  , Fellowship = require('../')
+const assert = require('assert')
+    , createFellowship = require('../')
 
 describe('#deleteGroup', function () {
 
-  it('should throw an error if group does not exist', function () {
-    var fellowship = new Fellowship()
+  it('should return an error if group does not exist', function (done) {
+    let opts = { resources: {}, groups: {} }
 
-    assert.throws(fellowship.deleteGroup.bind(fellowship, 'exists'), /Group exists does not exist/)
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
+
+      fellowship.deleteGroup('exists', function (error) {
+        assert.strictEqual(error.message, 'Group exists does not exist')
+
+        done()
+      })
+    })
   })
 
-  it('should successfully delete a group', function () {
-    var fellowship = new Fellowship()
+  it('should successfully delete a group', function (done) {
+    let opts = { resources: {}, groups: { test: {} } }
 
-    fellowship.addResource('test', [ 'hello', 'world' ])
-    fellowship.addGroup('test', { test: 2 })
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
 
-    assert.equal(fellowship.getGroup('test').test, 2)
+      fellowship.deleteGroup('test', function (error) {
+        if (error) return done(error)
 
-    fellowship.deleteGroup('test')
+        fellowship.getGroup('test', function (error) {
+          assert.strictEqual(error.message, 'Group test does not exist')
 
-    assert.throws(fellowship.deleteGroup.bind(fellowship, 'test'), /Group test does not exist/)
+          done()
+        })
+      })
+    })
   })
 
   it('should emit group.deleted', function (done) {
-    var fellowship = new Fellowship()
+    let opts = { resources: {}, groups: { test: {} } }
 
-    fellowship.on('group.deleted', function (name) {
-      assert.equal(name, 'test')
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
 
-      done()
+      fellowship.on('group.deleted', function (name) {
+        assert.equal(name, 'test')
+
+        done()
+      })
+
+      fellowship.deleteGroup('test', function (error) {
+        if (error) return done(error)
+      })
     })
-
-    fellowship.addGroup('test')
-    fellowship.deleteGroup('test')
-
   })
 
 })

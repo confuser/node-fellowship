@@ -1,53 +1,77 @@
-var assert = require('assert')
-  , Fellowship = require('../')
+const assert = require('assert')
+    , createFellowship = require('../')
 
 describe('#newPermission', function () {
-  it('should throw an error if more than 31 permissions', function () {
-    var fellowship = new Fellowship()
-      , permissions = []
 
-    for (var i = 0; i < 31; i++) {
-      permissions.push(i)
-    }
+  it('should throw an error if more than 31 permissions', function (done) {
+    let opts = { resources: {}, groups: {} }
 
-    fellowship.addResource('test', permissions)
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
 
-    assert.throws(fellowship.newPermission.bind(fellowship, 'test', 'perm')
-      , /You may not have more than 31 permissions per resource/)
+      let permissions = []
+
+      for (var i = 0; i < 31; i++) {
+        permissions.push(i)
+      }
+
+      fellowship.addResource('test', permissions, function (error) {
+        if (error) done(error)
+
+        fellowship.newPermission('test', 'perm', function (error) {
+          assert.strictEqual(error.message, 'You may not have more than 31 permissions per resource')
+
+          done()
+        })
+      })
+    })
   })
 
-  it('should throw an error if permission already exists', function () {
-    var fellowship = new Fellowship()
+  it('should throw an error if permission already exists', function (done) {
+    let opts = { resources: { test: { perm: 1 } }, groups: {} }
 
-    fellowship.addResource('test', [])
-    fellowship.newPermission('test', 'perm')
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
 
-    assert.throws(fellowship.newPermission.bind(fellowship, 'test', 'perm')
-      , /perm is already a defined permission/)
+      fellowship.newPermission('test', 'perm', function (error) {
+        assert.strictEqual(error.message, 'perm is already a defined permission')
+
+        done()
+      })
+    })
   })
 
-  it('should throw an error if permission is wildcard', function () {
-    var fellowship = new Fellowship()
+  it('should throw an error if permission is wildcard', function (done) {
+    let opts = { resources: { test: {} }, groups: {} }
 
-    fellowship.addResource('test', [])
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
 
-    assert.throws(fellowship.newPermission.bind(fellowship, 'test', '*')
-      , /\* wildcard may not be a permission/)
+      fellowship.newPermission('test', '*', function (error) {
+        assert.strictEqual(error.message, '* wildcard may not be a permission')
+
+        done()
+      })
+    })
   })
 
   it('should emit permission.new', function (done) {
-    var fellowship = new Fellowship()
+    let opts = { resources: { test: {} }, groups: {} }
 
-    fellowship.on('permission.new', function (resourceName, permissionName) {
-      assert.equal(resourceName, 'test')
-      assert.equal(permissionName, 'bar')
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
 
-      done()
+      fellowship.on('permission.new', function (resourceName, permissionName) {
+        assert.equal(resourceName, 'test')
+        assert.equal(permissionName, 'bar')
+
+        done()
+      })
+
+      fellowship.newPermission('test', 'bar', function (error) {
+        if (error) return done(error)
+      })
     })
-
-    fellowship.addResource('test', [ 'hello', 'foo', 'world' ])
-    fellowship.newPermission('test', 'bar')
-
   })
 
 })

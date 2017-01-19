@@ -1,35 +1,60 @@
-var assert = require('assert')
-  , Fellowship = require('../')
+const assert = require('assert')
+  , createFellowship = require('../')
 
 describe('#addGroup', function () {
 
-  it('should throw an error if group exists', function () {
-    var fellowship = new Fellowship()
+  it('should return an error if group exists', function (done) {
+    let opts = { resources: { test: { hello: 1, world: 2 } }, groups: { test: { test: 2 } } }
 
-    fellowship.addGroup('test', { test: 2 })
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
 
-    assert.throws(fellowship.addGroup.bind(fellowship, 'test'), /Group test already exists/)
+      fellowship.addGroup('test', { test: 2 }, function (error) {
+        assert.strictEqual(error.message, 'Group test already exists')
+
+        done()
+      })
+    })
   })
 
-  it('should successfully add a group', function () {
-    var fellowship = new Fellowship()
+  it('should successfully add a group', function (done) {
+    let opts = { resources: { test: { hello: 1, world: 2 } }, groups: {} }
 
-    fellowship.addGroup('test', { test: 2 })
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
 
-    assert.equal(fellowship.getGroup('test').test, 2)
+      fellowship.addGroup('test', { test: 2 }, function (error) {
+        if (error) return done(error)
+
+        fellowship.getGroup('test', function (error, group) {
+          if (error) return done(error)
+
+          assert.equal(group.test, 2)
+
+          done()
+        })
+      })
+    })
   })
 
   it('should emit group.added', function (done) {
-    var fellowship = new Fellowship()
+    let opts = { resources: { test: { hello: 1, world: 2 } }, groups: {} }
 
-    fellowship.on('group.added', function (groupName, resourcePermissions) {
-      assert.equal(groupName, 'test')
-      assert.deepEqual(resourcePermissions, { test: 2 })
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
 
-      done()
+      fellowship.on('group.added', function (groupName, resourcePermissions) {
+        assert.equal(groupName, 'test')
+
+        assert.deepEqual(resourcePermissions, { test: 2 })
+
+        done()
+      })
+
+      fellowship.addGroup('test', { test: 2 }, function (error) {
+        if (error) return done(error)
+      })
     })
-
-    fellowship.addGroup('test', { test: 2 })
   })
 
 })

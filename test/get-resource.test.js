@@ -1,20 +1,36 @@
-var assert = require('assert')
-  , Fellowship = require('../')
+const assert = require('assert')
+    , createFellowship = require('../')
 
 describe('#getResource', function () {
 
-  it('should throw an error if does not exist', function () {
-    var fellowship = new Fellowship()
+  it('should return an error if resource does not exist', function (done) {
+    let opts = { resources: {}, groups: {} }
 
-    assert.throws(fellowship.getResource.bind(fellowship, 'test'), /Resource test does not exist/)
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
+
+      fellowship.getResource('test', function (error) {
+        assert.strictEqual(error.message, 'Resource test does not exist')
+
+        done()
+      })
+    })
   })
 
-  it('should successfully return a resource', function () {
-    var fellowship = new Fellowship()
+  it('should successfully return a resource', function (done) {
+    let opts = { resources: { test: { hello: 1 } }, groups: {} }
 
-    fellowship.addResource('test', [ 'hello', 'test' ])
+    createFellowship(opts, (error, fellowship) => {
+      if (error) return done(error)
 
-    assert.equal(fellowship.getResource('test').test, 2)
+      fellowship.getResource('test', function (error, resource) {
+        if (error) return done(error)
+
+        assert.equal(resource.hello, 1)
+
+        done()
+      })
+    })
   })
 
 })
